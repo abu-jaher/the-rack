@@ -6,7 +6,7 @@ public class Bmi {
     public static void main(String[] args) {
         Scanner input = new Scanner(System.in);
 
-        System.out.println("--- BMI Calculator Updated---");
+        System.out.println("--- BMI Calculator---");
 
         System.out.print("Enter weight in kilograms: ");
         double weight = input.nextDouble();
