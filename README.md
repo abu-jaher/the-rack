@@ -6,8 +6,8 @@ An AI-assisted clothing store built with React, Node.js, MongoDB, Stripe, and Go
 
 ```
 the-rack/
-├── Smart-Shop Server/    Express API + MongoDB + Stripe + Gemini
-└── Smart-Shop UI/        React app (CRA)
+├── server/    Express API + MongoDB + Stripe + Gemini
+└── frontend/        React app (CRA)
 ```
 
 ## Local development
@@ -15,7 +15,7 @@ the-rack/
 ### Server
 
 ```bash
-cd "Smart-Shop Server"
+cd "server"
 npm install
 cp .env.example .env       # fill in your keys
 node seed.js               # one-time: populates the products collection
@@ -27,7 +27,7 @@ Server runs on http://localhost:5001
 ### UI
 
 ```bash
-cd "Smart-Shop UI"
+cd "frontend"
 npm install
 cp .env.example .env       # fill in your Stripe publishable key
 npm start
@@ -46,7 +46,7 @@ UI runs on http://localhost:3000
 
 This repo deploys as a monorepo to Vercel (frontend) + Render (backend). Both
 platforms support specifying a root directory at deploy time so they can build
-from `Smart-Shop UI` and `Smart-Shop Server` respectively. See deployment notes
+from `frontend` and `server` respectively. See deployment notes
 in the project documentation.
 
 ## Environment variables
