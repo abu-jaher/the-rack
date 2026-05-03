@@ -1,0 +1,80 @@
+// src/utils/session.js
+//
+// Single source of truth for "who is the user right now" on the client.
+// Three things live in localStorage:
+//   - guestId    : a stable random ID for this browser, created on first visit.
+//                  Survives logout and is reused. Used as the cart owner when
+//                  no user is signed in.
+//   - userEmail  : the email of the signed-in user, if any.
+//   - authToken  : the JWT returned by the server on login/register.
+//
+// The cart endpoints accept either a Bearer token (signed-in) or a guestId
+// (anonymous), so we always send both via cartConfig() and let the server
+// prefer whichever is valid.
+
+// API base URL.
+//   - In development:    falls back to http://localhost:5001
+//   - In production:     set REACT_APP_API_BASE on Vercel to your Render URL
+//                        e.g. https://the-rack-server.onrender.com
+export const API_BASE =
+  process.env.REACT_APP_API_BASE || "http://localhost:5001";
+
+/* ---------------- guest id ---------------- */
+
+function generateGuestId() {
+  if (typeof crypto !== "undefined" && crypto.randomUUID) {
+    return "guest_" + crypto.randomUUID();
+  }
+  return (
+    "guest_" +
+    Math.random().toString(36).slice(2) +
+    Date.now().toString(36)
+  );
+}
+
+export function getGuestId() {
+  let id = localStorage.getItem("guestId");
+  if (!id) {
+    id = generateGuestId();
+    localStorage.setItem("guestId", id);
+  }
+  return id;
+}
+
+/* ---------------- auth ---------------- */
+
+export function getAuthToken() {
+  return localStorage.getItem("authToken") || null;
+}
+
+export function getUserEmail() {
+  return localStorage.getItem("userEmail") || "";
+}
+
+export function isLoggedIn() {
+  return Boolean(getAuthToken() && getUserEmail());
+}
+
+export function setSession(email, token) {
+  localStorage.setItem("userEmail", email);
+  localStorage.setItem("authToken", token);
+}
+
+export function clearSession() {
+  localStorage.removeItem("userEmail");
+  localStorage.removeItem("authToken");
+}
+
+/* ---------------- request configs ---------------- */
+
+export function authHeaders() {
+  const token = getAuthToken();
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
+
+export function cartConfig() {
+  return {
+    headers: authHeaders(),
+    params: { guestId: getGuestId() },
+  };
+}

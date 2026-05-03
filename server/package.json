@@ -1,0 +1,40 @@
+{
+  "name": "smart-shop-ai-server",
+  "version": "1.0.0",
+  "description": "E-commerce backend featuring an AI Shopping Assistant with Gemini API integration",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "start-dev": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "ecommerce",
+    "ai",
+    "gemini",
+    "mongodb",
+    "react",
+    "stripe"
+  ],
+  "author": "Abuzaher Mohammad",
+  "license": "ISC",
+  "dependencies": {
+    "@google/generative-ai": "^0.21.0",
+    "axios": "^1.14.0",
+    "bcrypt": "^5.1.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.0",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.2",
+    "lucide-react": "^1.7.0",
+    "mongodb": "^6.3.0",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "react-router-dom": "^7.13.2",
+    "react-scripts": "^5.0.1",
+    "stripe": "^17.3.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
+}
