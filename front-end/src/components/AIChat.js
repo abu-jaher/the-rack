@@ -90,21 +90,6 @@ const AIChat = ({ userEmail, onAddToCart }) => {
     setIsOpen(false);
   };
 
-  /**
-   * Normalize alternate token formats that Iba sometimes emits despite the
-   * prompt being explicit about square brackets. Rewrites them in place to
-   * the canonical [SHOW_PRODUCT: id] / [SHOW_CATEGORY: name] / [ADD_TO_CART: id]
-   * form so the existing parser further down works without changes.
-   *
-   * Cases handled:
-   *   <product id="abc">Name</product>              -> [SHOW_PRODUCT: abc]
-   *   <SHOW_PRODUCT: abc>  /  <SHOW_PRODUCT:abc>    -> [SHOW_PRODUCT: abc]
-   *   <SHOW_CATEGORY: T-Shirts>                     -> [SHOW_CATEGORY: T-Shirts]
-   *   <ADD_TO_CART: abc>                            -> [ADD_TO_CART: abc]
-   *   {SHOW_PRODUCT: abc}                           -> [SHOW_PRODUCT: abc]
-   *   [PRODUCT: abc]                                -> [SHOW_PRODUCT: abc]
-   *   [CATEGORY: T-Shirts]                          -> [SHOW_CATEGORY: T-Shirts]
-   */
   const normalizeTokens = (text) => {
     if (!text) return text;
 
@@ -161,9 +146,6 @@ const AIChat = ({ userEmail, onAddToCart }) => {
     const trimmed = text.trim();
     if (!trimmed || loading) return;
 
-    // Build the new history including this user turn before we send.
-    // We use the functional form of setState to avoid stale-state bugs
-    // when chips are tapped in quick succession.
     const userTurn = { role: 'user', text: trimmed };
     const nextMessages = [...messages, userTurn];
     setMessages(nextMessages);
@@ -171,21 +153,12 @@ const AIChat = ({ userEmail, onAddToCart }) => {
     setLoading(true);
 
     try {
-      // Send the full conversation history so Iba has context (remembers
-      // gender preference, previous filters, etc.). The server expects an
-      // array of { role: 'user' | 'bot', text }.
       const res = await axios.post(`${API_BASE}/chat`, {
         history: nextMessages,
         message: trimmed, // kept for backwards compatibility
         userEmail,
       });
       const aiReply = normalizeTokens(res.data.reply);
-
-      // Iba can emit multiple [ADD_TO_CART: id] tokens in a single reply
-      // (for example when the user asks to add several recommended items
-      // at once). Loop through all of them, not just the first. Run them
-      // silently because Iba's own reply already confirms what was added -
-      // we don't want to follow it with three more "Added X" bubbles.
       const addMatches = [...aiReply.matchAll(/\[ADD_TO_CART:\s*([^\]]+?)\s*\]/g)];
       for (const m of addMatches) {
         handleAction('ADD', m[1].trim(), { silent: true });

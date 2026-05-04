@@ -11,21 +11,10 @@ const port = process.env.PORT || 5001;
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 
 const Stripe = require("stripe");
-// Initialise Stripe only if the key is present. Avoids a crash during
-// initial deploys when env vars haven't been set yet. Routes that need
-// Stripe will fail with a clear error at request time instead.
 const stripe = process.env.STRIPE_SECRET_KEY
   ? Stripe(process.env.STRIPE_SECRET_KEY)
   : null;
 
-// CORS configuration.
-//   - In development: allow any origin so localhost:3000 (or any port) works.
-//   - In production:  only allow the deployed frontend URL plus localhost
-//                     (so you can still test against the prod backend from dev).
-//
-// CLIENT_URL is the deployed frontend's URL, e.g. https://the-rack.vercel.app
-// Multiple origins can be comma-separated:
-//   CLIENT_URL=https://the-rack.vercel.app,https://www.therack.com
 const allowedOrigins = (process.env.CLIENT_URL || "")
   .split(",")
   .map((s) => s.trim())
@@ -52,11 +41,6 @@ app.use(express.json());
 const JWT_SECRET = process.env.JWT_SECRET || "dev-only-replace-me-in-production";
 const JWT_EXPIRY = "30d";
 
-// MongoDB connection string.
-//   - In production: set MONGODB_URI on Render to your full Atlas connection
-//     string (the one that starts with mongodb+srv://).
-//   - In development: keep using DB_USER and DB_PASS as before. The fallback
-//     below builds the URI exactly the way the old code did.
 const uri =
   process.env.MONGODB_URI ||
   `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.sdgvpqs.mongodb.net/smartShop?retryWrites=true&w=majority&appName=Cluster0`;
@@ -161,9 +145,6 @@ async function run() {
           query.category = { $regex: `^${category}$`, $options: "i" };
         }
         if (gender) {
-          // Filter by exact gender, but always include unisex unless someone
-          // explicitly asks for "unisex" only. So /products?gender=women
-          // returns women's + unisex.
           if (gender === "unisex") {
             query.gender = "unisex";
           } else {
@@ -615,9 +596,6 @@ async function run() {
     const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
     app.post("/chat", async (req, res) => {
-      // The frontend now sends an array of recent turns so Iba can hold a
-      // multi-turn conversation. Each entry is { role: 'user' | 'bot', text }.
-      // For backwards compatibility, a single 'message' string still works.
       const { history, message } = req.body;
 
       try {
@@ -765,15 +743,8 @@ Conversational, warm, fashion-aware. Short sentences. No emoji.
 Get to the recommendation quickly. Don't lecture.
         `.trim();
 
-        // Build the conversation. If history is provided, replay it as
-        // proper user/model turns so Iba has context. Otherwise fall back
-        // to a single message turn for backwards compatibility.
         let result;
         if (Array.isArray(history) && history.length > 0) {
-          // Gemini's chat API expects { role: 'user' | 'model', parts: [...] }.
-          // We map our 'bot' role to 'model'. We also skip the very first
-          // system "greeting" message because it's a UI artifact, not part
-          // of the real conversation.
           const geminiHistory = history
             .filter((m) => m.type !== 'greeting')
             .map((m) => ({
@@ -781,15 +752,10 @@ Get to the recommendation quickly. Don't lecture.
               parts: [{ text: m.text }],
             }));
 
-          // Gemini requires the history to start with a user message. If our
-          // first turn happens to be a bot message, drop entries until we
-          // hit a user one.
           while (geminiHistory.length > 0 && geminiHistory[0].role !== 'user') {
             geminiHistory.shift();
           }
 
-          // The last entry is the current user message we're responding to.
-          // Pop it off; pass it to sendMessage(), and use the rest as history.
           const lastTurn = geminiHistory.pop();
 
           if (!lastTurn || lastTurn.role !== 'user') {

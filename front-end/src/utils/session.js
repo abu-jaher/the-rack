@@ -1,21 +1,3 @@
-// src/utils/session.js
-//
-// Single source of truth for "who is the user right now" on the client.
-// Three things live in localStorage:
-//   - guestId    : a stable random ID for this browser, created on first visit.
-//                  Survives logout and is reused. Used as the cart owner when
-//                  no user is signed in.
-//   - userEmail  : the email of the signed-in user, if any.
-//   - authToken  : the JWT returned by the server on login/register.
-//
-// The cart endpoints accept either a Bearer token (signed-in) or a guestId
-// (anonymous), so we always send both via cartConfig() and let the server
-// prefer whichever is valid.
-
-// API base URL.
-//   - In development:    falls back to http://localhost:5001
-//   - In production:     set REACT_APP_API_BASE on Vercel to your Render URL
-//                        e.g. https://the-rack-server.onrender.com
 export const API_BASE =
   process.env.REACT_APP_API_BASE || "http://localhost:5001";
 

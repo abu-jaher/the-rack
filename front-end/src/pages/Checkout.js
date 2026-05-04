@@ -23,10 +23,6 @@ import { API_BASE, authHeaders, cartConfig } from '../utils/session';
 // from your client .env (REACT_APP_STRIPE_PUBLISHABLE_KEY).
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY);
 
-/* =========================================================================
-   Inner form (must be inside <Elements> to use useStripe / useElements hooks)
-   ========================================================================= */
-
 const CheckoutForm = ({
   userEmail,
   totals,
@@ -434,10 +430,6 @@ const CheckoutForm = ({
   );
 };
 
-/* =========================================================================
-   Outer page (handles auth gate + payment intent creation)
-   ========================================================================= */
-
 const Checkout = ({ userEmail, onOrderPlaced }) => {
   const navigate = useNavigate();
   const [clientSecret, setClientSecret] = useState('');
@@ -501,8 +493,6 @@ const Checkout = ({ userEmail, onOrderPlaced }) => {
   };
 
   // When the user changes shipping method, recompute totals + create a new PaymentIntent.
-  // (Stripe doesn't let us change the amount on an existing PaymentIntent after card entry,
-  //  but it's simpler to just create a fresh one for the new amount.)
   const refreshTotals = (method) => {
     createIntent(method);
   };

@@ -3,17 +3,6 @@ import axios from "axios";
 import { X, Mail, Lock, Loader, Eye, EyeOff } from "lucide-react";
 import { API_BASE, setSession, getGuestId } from "../utils/session";
 
-/**
- * AuthModal
- *
- * Mounted once at the app root. Listens for `window` events:
- *   - 'open-auth'        -> opens the modal in 'login' mode
- *   - 'open-auth-register' -> opens in 'register' mode
- *
- * On successful auth: saves the token + email to localStorage, calls the
- * server's /cart/merge to move any guest cart items into the user's account,
- * then calls onSuccess(email) so App.js can refresh state.
- */
 const AuthModal = ({ onSuccess }) => {
   const [open, setOpen] = useState(false);
   const [mode, setMode] = useState("login"); // 'login' | 'register'
