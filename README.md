@@ -63,3 +63,14 @@ See `.env.example` in each folder for the complete list and descriptions.
 **UI requires:**
 - `REACT_APP_API_BASE` (production backend URL)
 - `REACT_APP_STRIPE_PUBLISHABLE_KEY` (pk_test_... from Stripe dashboard)
+
+## Test Walkthrough
+ 
+1. Visit https://the-rack-rosy.vercel.app/
+2. Wait ~30 seconds for the backend to wake up on first load
+3. Browse categories or open Iba (chat button, bottom right) and try prompts like *"warm jacket"*, *"running shoes in black"*, or *"help me build an outfit"*
+4. Add items to your cart as a guest
+5. Sign up — your guest cart will merge into your account
+6. Check out using Stripe test card `4242 4242 4242 4242`, any future date, any CVC, any postal code
+7. View your order under "My Orders"
+No real money is processed — Stripe is in test mode.
