@@ -154,8 +154,11 @@ const AIChat = ({ userEmail, onAddToCart }) => {
 
     try {
       const res = await axios.post(`${API_BASE}/chat`, {
-        history: nextMessages,
-        message: trimmed, // kept for backwards compatibility
+        history: nextMessages.map(m => ({
+          role: m.role === 'bot' ? 'assistant' : m.role,
+          text: m.text
+        })),
+        message: trimmed,
         userEmail,
       });
       const aiReply = normalizeTokens(res.data.reply);

@@ -8,7 +8,7 @@ var cors = require("cors");
 
 const app = express();
 const port = process.env.PORT || 5001;
-const { GoogleGenerativeAI } = require("@google/generative-ai");
+const OpenAI = require("openai");
 
 const Stripe = require("stripe");
 const stripe = process.env.STRIPE_SECRET_KEY
@@ -592,8 +592,10 @@ async function run() {
 
     // ---------------- IBA AI INTEGRATION ---------------- //
 
-    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+    const deepseek = new OpenAI({
+      baseURL: 'https://api.deepseek.com',
+      apiKey: process.env.DEEPSEEK_API_KEY,
+    });
 
     app.post("/chat", async (req, res) => {
       const { history, message } = req.body;
@@ -743,38 +745,28 @@ Conversational, warm, fashion-aware. Short sentences. No emoji.
 Get to the recommendation quickly. Don't lecture.
         `.trim();
 
-        let result;
+        let messages = [{ role: "system", content: systemPrompt }];
+
         if (Array.isArray(history) && history.length > 0) {
-          const geminiHistory = history
+          const mappedHistory = history
             .filter((m) => m.type !== 'greeting')
             .map((m) => ({
-              role: m.role === 'user' ? 'user' : 'model',
-              parts: [{ text: m.text }],
+              role: m.role === 'user' ? 'user' : 'assistant',
+              content: m.text,
             }));
-
-          while (geminiHistory.length > 0 && geminiHistory[0].role !== 'user') {
-            geminiHistory.shift();
-          }
-
-          const lastTurn = geminiHistory.pop();
-
-          if (!lastTurn || lastTurn.role !== 'user') {
-            // Defensive fallback if history was malformed
-            result = await model.generateContent([systemPrompt, message || '']);
-          } else {
-            const chat = model.startChat({
-              history: geminiHistory,
-              systemInstruction: { parts: [{ text: systemPrompt }] },
-            });
-            result = await chat.sendMessage(lastTurn.parts[0].text);
-          }
-        } else {
-          // Backwards-compatible single-message path
-          result = await model.generateContent([systemPrompt, message || '']);
+          messages.push(...mappedHistory);
+        } else if (message) {
+          messages.push({ role: "user", content: message });
         }
 
-        const response = await result.response;
-        res.send({ reply: response.text() });
+        const completion = await deepseek.chat.completions.create({
+          model: "deepseek-chat", // DeepSeek-V3
+          messages: messages,
+          temperature: 0.7,
+        });
+
+        const reply = completion.choices[0].message.content;
+        res.send({ reply });
       } catch (error) {
         console.error("AI error:", error);
         res.status(500).send({ error: "AI error" });
