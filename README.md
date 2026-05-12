@@ -1,12 +1,12 @@
 # The Rack
 
-An AI-assisted clothing store built with React, Node.js, MongoDB, Stripe, and Google Gemini.
+An AI-assisted clothing store built with React, Node.js, MongoDB, Stripe, and Open AI.
 
 ## Project structure
 
 ```
 the-rack/
-├── server/    Express API + MongoDB + Stripe + Gemini
+├── server/    Express API + MongoDB + Stripe + Open AI
 └── frontend/        React app (CRA)
 ```
 
@@ -40,7 +40,7 @@ UI runs on http://localhost:3000
 - **Frontend:** React, React Router, Tailwind CSS, Stripe Elements, Lucide icons
 - **Backend:** Node.js, Express, MongoDB (Atlas), bcrypt, JWT
 - **Payments:** Stripe (test mode)
-- **AI:** Google Gemini 2.5 Flash (the in-store stylist, "Iba")
+- **AI:** Deepseek v3 (the in-store stylist, "Iba")
 
 ## Deployment
 
@@ -57,7 +57,7 @@ See `.env.example` in each folder for the complete list and descriptions.
 - `MONGODB_URI` (full Atlas connection string)
 - `JWT_SECRET` (long random string)
 - `STRIPE_SECRET_KEY` (sk_test_... from Stripe dashboard)
-- `GEMINI_API_KEY` (from Google AI Studio)
+- `DeepSeek_API_KEY`
 - `CLIENT_URL` (production frontend URL, comma-separated for multiple)
 
 **UI requires:**
