@@ -591,16 +591,10 @@ async function run() {
     });
 
     // ---------------- IBA AI INTEGRATION ---------------- //
-
-<<<<<<< HEAD
     const deepseek = new OpenAI({
       baseURL: 'https://api.deepseek.com',
       apiKey: process.env.DEEPSEEK_API_KEY,
     });
-=======
-    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-pro" });
->>>>>>> 9b7815b4ab84bfa3314f5b9261e65cd5cec3872c
 
     app.post("/chat", async (req, res) => {
       const { history, message } = req.body;
