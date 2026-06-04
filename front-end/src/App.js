@@ -26,6 +26,25 @@ function AppContent() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    if (document.getElementById('avsb')) return;
+  
+    const script = document.createElement('script');
+    script.id = 'avsb';
+    script.src = 'https://cdn.avsb.cloud/snippet.js?id=cmpz3f7hf000704l4o2idt6my';
+    script.async = true;
+  
+    document.head.appendChild(script);
+  
+    // Optional: Cleanup the script if the component unmounts
+    return () => {
+      const existingScript = document.getElementById('avsb');
+      if (existingScript) {
+        document.head.removeChild(existingScript);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
     getGuestId();
   }, []);
 
