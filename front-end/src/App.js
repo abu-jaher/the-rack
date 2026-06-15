@@ -26,18 +26,24 @@ function AppContent() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (document.getElementById('avsb')) return;
-  
+    // Check if the script already exists to prevent duplicate injections
+    if (document.getElementById('municipal-chat-script')) return;
+
     const script = document.createElement('script');
-    script.id = 'avsb';
-    script.src = 'https://cdn.avsb.cloud/snippet.js?id=cmpz3f7hf000704l4o2idt6my';
+    script.id = 'municipal-chat-script';
+    script.src = 'https://ki2-municipal-widget.b-cdn.net/municipal-chat/v1/municipal-chat.js';
     script.async = true;
-  
+
+    // Set the specific data attributes required by the widget
+    script.setAttribute('data-tenant-id', 'nh7dnw7fags3kysmetpsfzmffn88pg42');
+    script.setAttribute('data-api-base', 'https://upbeat-porcupine-90.eu-west-1.convex.site');
+    script.setAttribute('data-language', 'en');
+
     document.head.appendChild(script);
-  
-    // Optional: Cleanup the script if the component unmounts
+
+    // Cleanup the script if the component unmounts to keep DOM clean
     return () => {
-      const existingScript = document.getElementById('avsb');
+      const existingScript = document.getElementById('municipal-chat-script');
       if (existingScript) {
         document.head.removeChild(existingScript);
       }
